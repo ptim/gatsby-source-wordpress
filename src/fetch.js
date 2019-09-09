@@ -48,6 +48,7 @@ async function fetch({
   _acfOptionPageIds,
   _hostingWPCOM,
   _auth,
+  _headers,
   _cookies,
   _perPage,
   _concurrentRequests,
@@ -100,6 +101,7 @@ Mama Route URL: ${url}
     let options = {
       method: `get`,
       url: url,
+      headers: {},
     }
     if (shouldUseHtaccess(_auth)) {
       options.auth = {
@@ -108,8 +110,16 @@ Mama Route URL: ${url}
       }
     }
 
+    if (_headers) {
+      options.headers = {
+        ...options.headers,
+        ..._headers,
+      }
+    }
+
     if (_accessToken) {
       options.headers = {
+        ...options.headers,
         Authorization: `Bearer ${_accessToken}`,
       }
     }

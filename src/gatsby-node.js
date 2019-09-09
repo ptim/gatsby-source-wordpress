@@ -17,6 +17,7 @@ let _useACF = true
 let _acfOptionPageIds
 let _hostingWPCOM
 let _auth
+let _headers
 let _cookies
 let _perPage
 let _concurrentRequests
@@ -42,6 +43,7 @@ exports.sourceNodes = async (
     useACF = true,
     acfOptionPageIds = [],
     auth = {},
+    headers = {},
     cookies = {},
     verboseOutput,
     perPage = 100,
@@ -62,6 +64,7 @@ exports.sourceNodes = async (
   _acfOptionPageIds = acfOptionPageIds
   _hostingWPCOM = hostingWPCOM
   _auth = auth
+  _headers = headers
   _cookies = cookies
   _perPage = perPage
   _concurrentRequests = concurrentRequests
@@ -78,6 +81,7 @@ exports.sourceNodes = async (
     _acfOptionPageIds,
     _hostingWPCOM,
     _auth,
+    _headers,
     _cookies,
     _perPage,
     _concurrentRequests,
