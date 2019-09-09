@@ -1,4 +1,4 @@
-# gatsby-source-wordpress
+# @ptim/gatsby-source-wordpress
 
 Source plugin for pulling data into [Gatsby](https://github.com/gatsbyjs) from
 WordPress sites using the
@@ -34,7 +34,7 @@ Note : If some fields are missing, check [troubleshooting missing fields](#missi
 
 ## Install
 
-`npm install --save gatsby-source-wordpress`
+`npm install --save @ptim/gatsby-source-wordpress`
 
 ## How to use
 
@@ -49,7 +49,7 @@ module.exports = {
      * plugins. Here the site sources its data from Wordpress.
      */
     {
-      resolve: "gatsby-source-wordpress",
+      resolve: "@ptim/gatsby-source-wordpress",
       options: {
         /*
          * The base URL of the Wordpress site without the trailingslash and the protocol. This is required.
@@ -101,6 +101,8 @@ module.exports = {
           jwt_pass: process.env.JWT_PASSWORD,
           jwt_base_path: "/jwt-auth/v1/token", // Default - can skip if you are using https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
         },
+        // Set custom headers
+        headers: {},
         // Set cookies that should be send with requests to wordpress as key value pairs
         cookies: {},
         // Set verboseOutput to true to display a verbose output on `npm run develop` or `npm run build`
@@ -213,7 +215,7 @@ If you see a page on your site, rather than the JSON output, check if your perma
 
 ## Fetching Data: WordPress REST API Route Selection
 
-By default `gatsby-source-wordpress` plugin will fetch data from all endpoints provided by introspection `/wp-json` response. To customize the routes fetched, two configuration options are available: `includeRoutes` for whitelisting and `excludeRoutes` for blacklisting. Both options expect an array of glob patterns. Glob matching is done by [minimatch](https://github.com/isaacs/minimatch). To test your glob patterns, [use this tool](http://pthrasher.github.io/minimatch-test/). You can inspect discovered routes by using `verboseOutput: true` configuration option.
+By default `@ptim/gatsby-source-wordpress` plugin will fetch data from all endpoints provided by introspection `/wp-json` response. To customize the routes fetched, two configuration options are available: `includeRoutes` for whitelisting and `excludeRoutes` for blacklisting. Both options expect an array of glob patterns. Glob matching is done by [minimatch](https://github.com/isaacs/minimatch). To test your glob patterns, [use this tool](http://pthrasher.github.io/minimatch-test/). You can inspect discovered routes by using `verboseOutput: true` configuration option.
 
 If an endpoint is whitelisted and not blacklisted, it will be fetched. Otherwise, it will be ignored.
 
@@ -756,7 +758,7 @@ GraphQL nodes. You can extend the normalizers by passing a custom function to yo
 ### Example:
 
 You have a custom post type `movie` and a related custom taxonomy `genre` in your WordPress site. Since
-`gatsby-source-wordpress` doesn't know about the relation of the two, we can build an additional normalizer function to map the movie GraphQL nodes to the genre nodes:
+`@ptim/gatsby-source-wordpress` doesn't know about the relation of the two, we can build an additional normalizer function to map the movie GraphQL nodes to the genre nodes:
 
 ```javascript
 function mapMoviesToGenres({ entities }) {
@@ -784,7 +786,7 @@ In your `gatsby-config.js` you can then pass the function to the plugin options:
 module.exports = {
   plugins: [
     {
-      resolve: "gatsby-source-wordpress",
+      resolve: "@ptim/gatsby-source-wordpress",
       options: {
         // ...
         normalizer: mapMoviesToGenres,
