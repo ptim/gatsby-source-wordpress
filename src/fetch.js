@@ -110,17 +110,17 @@ Mama Route URL: ${url}
       }
     }
 
-    if (_headers) {
-      options.headers = {
-        ...options.headers,
-        ..._headers,
-      }
-    }
-
     if (_accessToken) {
       options.headers = {
         ...options.headers,
         Authorization: `Bearer ${_accessToken}`,
+      }
+    }
+
+    if (_headers) {
+      options.headers = {
+        ...options.headers,
+        ..._headers,
       }
     }
 
@@ -132,11 +132,14 @@ Mama Route URL: ${url}
     }
 
     allRoutes = await axios(options)
+    console.assert(!!allRoutes, '❌ allRoutes is not defined!')
   } catch (e) {
     httpExceptionHandler(e)
   }
+  let entities = []
 
-  let entities = [
+  if (allRoutes) {
+    entities = [
     {
       __type: `wordpress__site_metadata`,
       name: allRoutes.data.name,
@@ -146,7 +149,6 @@ Mama Route URL: ${url}
     },
   ]
 
-  if (allRoutes) {
     let validRoutes = getValidRoutes({
       allRoutes,
       url,
@@ -179,6 +181,7 @@ Fetching the JSON data from ${validRoutes.length} valid API Routes...
           _verbose,
           _perPage,
           _auth,
+          _headers,
           _cookies,
           _accessToken,
           _concurrentRequests,
@@ -265,6 +268,7 @@ async function fetchData({
   _verbose,
   _perPage,
   _auth,
+  _headers,
   _cookies,
   _accessToken,
   _concurrentRequests,
@@ -287,6 +291,7 @@ async function fetchData({
     url,
     _perPage,
     _auth,
+    _headers,
     _cookies,
     _accessToken,
     _verbose,
@@ -332,6 +337,7 @@ async function fetchData({
               _verbose,
               _perPage,
               _auth,
+              _headers,
               _cookies,
               _accessToken,
             })
@@ -349,8 +355,9 @@ async function fetchData({
             _verbose,
             _perPage,
             _auth,
-            _accessToken,
+            _headers,
             _cookies,
+            _accessToken,
           })
         )
       }
@@ -390,6 +397,7 @@ async function getPages(
     url,
     _perPage,
     _auth,
+    _headers,
     _cookies,
     _accessToken,
     _concurrentRequests,
@@ -407,11 +415,19 @@ async function getPages(
           per_page: _perPage,
           page: page,
         })}`,
+        headers: {},
       }
 
       if (_accessToken) {
         o.headers = {
           Authorization: `Bearer ${_accessToken}`,
+        }
+      }
+
+      if (_headers) {
+        o.headers = {
+          ...o.headers,
+          ..._headers,
         }
       }
 
