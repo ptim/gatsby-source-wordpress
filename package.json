@@ -1,6 +1,6 @@
 {
   "name": "@ptim/gatsby-source-wordpress",
-  "description": "Gatsby source plugin for building websites using the Wordpress CMS as a data source.",
+  "description": "Gatsby source plugin for building websites using the Wordpress CMS as a data source (with extra headers).",
   "version": "3.2.2",
   "author": "Sebastien Fichot <fichot.sebastien@gmail.com>",
   "bugs": {
@@ -28,7 +28,7 @@
     "cross-env": "^5.2.1",
     "dedent": "^0.7.0"
   },
-  "homepage": "https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-source-wordpress#readme",
+  "homepage": "https://github.com/ptim/gatsby-source-wordpress#readme",
   "keywords": [
     "gatsby",
     "gatsby-plugin",

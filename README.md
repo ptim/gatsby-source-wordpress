@@ -4,6 +4,8 @@ Source plugin for pulling data into [Gatsby](https://github.com/gatsbyjs) from
 WordPress sites using the
 [WordPress REST API](https://developer.wordpress.org/rest-api/reference/).
 
+> This fork adds the ability to [send extra headers](#Custom-headers) when making requests to /wp-json.
+
 An example site for this plugin is available.
 
 - [Demo](https://using-wordpress.gatsbyjs.org/)
@@ -1023,3 +1025,18 @@ Make the access credentials available to all environments that build your site:
 - the local dev server via .env.development ([dotenv](https://www.gatsbyjs.org/docs/environment-variables/))
 - the local production build process via .env.production ([dotenv](https://www.gatsbyjs.org/docs/environment-variables/))
 - netlify, via [environment variables](https://docs.netlify.com/configure-builds/environment-variables/)
+
+Pass the headers to the plugin:
+
+```javascript
+{
+  resolve: `@ptim/gatsby-source-wordpress`,
+  options: {
+    // ...
+    headers: {
+      'CF-Access-Client-Id': process.env.CF_Access_Client_Id,
+      'CF-Access-Client-Secret': process.env.CF_Access_Client_Secret,
+    },
+  }
+}
+```
