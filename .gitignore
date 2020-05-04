@@ -97,3 +97,10 @@ typings/
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
+request-in-queue.js
+output-color.js
+normalize.js
+normalize-base-url.js
+http-exception-handler.js
+gatsby-node.js
+fetch.js
