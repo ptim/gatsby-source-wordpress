@@ -3,6 +3,7 @@ const axios = require(`axios`)
 const _ = require(`lodash`)
 const minimatch = require(`minimatch`)
 const { URL } = require(`url`)
+const dedent = require(`dedent`)
 const colorized = require(`./output-color`)
 const httpExceptionHandler = require(`./http-exception-handler`)
 const requestInQueue = require(`./request-in-queue`)
@@ -24,12 +25,12 @@ const shouldUseHtaccess = auth =>
 const formatAuthSettings = auth => {
   let authOutputLines = []
   if (shouldUseJwt(auth)) {
-    authOutputLines.push(`  JWT Auth: ${auth.jwt_user}:${auth.jwt_pass}`)
+    authOutputLines.push(`JWT Auth: ${auth.jwt_user}:${auth.jwt_pass}`)
   }
 
   if (shouldUseHtaccess(auth)) {
     authOutputLines.push(
-      `  HTTP Basic Auth: ${auth.htaccess_user}:${auth.htaccess_pass}`
+      `HTTP Basic Auth: ${auth.htaccess_user}:${auth.htaccess_pass}`
     )
   }
 
@@ -73,23 +74,25 @@ async function fetch({
   }
 
   if (_verbose) {
-    console.time(`=END PLUGIN=====================================`)
+    console.time(`gatsby-source-wordpress`)
 
     const authOutput = formatAuthSettings(_auth)
 
     console.log(
       colorized.out(
-        `
-=START PLUGIN=====================================
+        dedent`
+        \n
+        =START PLUGIN=====================================
 
-Site URL: ${_siteURL}
-Site hosted on Wordpress.com: ${_hostingWPCOM}
-Using ACF: ${_useACF}
-Auth: ${authOutput ? `\n${authOutput}` : `false`}
-Verbose output: ${_verbose}
-
-Mama Route URL: ${url}
-`,
+        Site URL: ${_siteURL}
+        Site hosted on Wordpress.com: ${_hostingWPCOM}
+        Using ACF: ${_useACF}
+        ${authOutput ? `${authOutput}` : `Auth: false`}
+        Verbose output: ${_verbose}
+        Extra Headers: ${Object.keys(_headers).join(',')}
+        Mama Route URL: ${url}
+        \n
+        `,
         colorized.color.Font.FgBlue
       )
     )
@@ -110,17 +113,17 @@ Mama Route URL: ${url}
       }
     }
 
-    if (_headers) {
-      options.headers = {
-        ...options.headers,
-        ..._headers,
-      }
-    }
-
     if (_accessToken) {
       options.headers = {
         ...options.headers,
         Authorization: `Bearer ${_accessToken}`,
+      }
+    }
+
+    if (_headers) {
+      options.headers = {
+        ...options.headers,
+        ..._headers,
       }
     }
 
@@ -132,21 +135,23 @@ Mama Route URL: ${url}
     }
 
     allRoutes = await axios(options)
+    console.assert(!!allRoutes, '❌ allRoutes is not defined!')
   } catch (e) {
     httpExceptionHandler(e)
   }
-
-  let entities = [
-    {
-      __type: `wordpress__site_metadata`,
-      name: allRoutes.data.name,
-      description: allRoutes.data.description,
-      url: allRoutes.data.url,
-      home: allRoutes.data.home,
-    },
-  ]
+  let entities = []
 
   if (allRoutes) {
+    entities = [
+      {
+        __type: `wordpress__site_metadata`,
+        name: allRoutes.data.name,
+        description: allRoutes.data.description,
+        url: allRoutes.data.url,
+        home: allRoutes.data.home,
+      },
+    ]
+
     let validRoutes = getValidRoutes({
       allRoutes,
       url,
@@ -163,9 +168,7 @@ Mama Route URL: ${url}
     if (_verbose) {
       console.log(
         colorized.out(
-          `
-Fetching the JSON data from ${validRoutes.length} valid API Routes...
-`,
+          `Fetching the JSON data from ${validRoutes.length} valid API Routes...`,
           colorized.color.Font.FgBlue
         )
       )
@@ -179,6 +182,7 @@ Fetching the JSON data from ${validRoutes.length} valid API Routes...
           _verbose,
           _perPage,
           _auth,
+          _headers,
           _cookies,
           _accessToken,
           _concurrentRequests,
@@ -187,8 +191,16 @@ Fetching the JSON data from ${validRoutes.length} valid API Routes...
       if (_verbose) console.log(``)
     }
 
-    if (_verbose)
-      console.timeEnd(`=END PLUGIN=====================================`)
+    if (_verbose) {
+      console.log(
+        colorized.out(
+          `=END PLUGIN=====================================`,
+          colorized.color.Font.FgBlue
+        )
+      )
+      console.timeEnd(`gatsby-source-wordpress`)
+      console.log(``)
+    }
   } else {
     console.log(
       colorized.out(`No routes to fetch. Ending.`, colorized.color.Font.FgRed)
@@ -265,6 +277,7 @@ async function fetchData({
   _verbose,
   _perPage,
   _auth,
+  _headers,
   _cookies,
   _accessToken,
   _concurrentRequests,
@@ -287,6 +300,7 @@ async function fetchData({
     url,
     _perPage,
     _auth,
+    _headers,
     _cookies,
     _accessToken,
     _verbose,
@@ -332,6 +346,7 @@ async function fetchData({
               _verbose,
               _perPage,
               _auth,
+              _headers,
               _cookies,
               _accessToken,
             })
@@ -349,8 +364,9 @@ async function fetchData({
             _verbose,
             _perPage,
             _auth,
-            _accessToken,
+            _headers,
             _cookies,
+            _accessToken,
           })
         )
       }
@@ -390,6 +406,7 @@ async function getPages(
     url,
     _perPage,
     _auth,
+    _headers,
     _cookies,
     _accessToken,
     _concurrentRequests,
@@ -407,11 +424,19 @@ async function getPages(
           per_page: _perPage,
           page: page,
         })}`,
+        headers: {},
       }
 
       if (_accessToken) {
         o.headers = {
           Authorization: `Bearer ${_accessToken}`,
+        }
+      }
+
+      if (_headers) {
+        o.headers = {
+          ...o.headers,
+          ..._headers,
         }
       }
 
@@ -451,9 +476,10 @@ async function getPages(
     }
 
     if (_verbose) {
-      console.log(`
-Total entities : ${total}
-Pages to be requested : ${totalPages}`)
+      console.log(dedent`
+        Total entities : ${total}
+        Pages to be requested : ${totalPages}
+      `)
     }
 
     // We got page 1, now we want pages 2 through totalPages
@@ -537,7 +563,7 @@ function getValidRoutes({
     })
     // ACF to REST V2 does not allow ACF Option Page ID specification
     if (_acfOptionPageIds.length > 0 && acfRestNamespace.includes(`3`)) {
-      _acfOptionPageIds.forEach(function(acfOptionPageId) {
+      _acfOptionPageIds.forEach(function (acfOptionPageId) {
         validRoutes.push({
           url: `${url}/acf/v3/options/${acfOptionPageId}`,
           type: `${typePrefix}acf_options`,

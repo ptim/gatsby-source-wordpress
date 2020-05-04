@@ -101,7 +101,7 @@ module.exports = {
           jwt_pass: process.env.JWT_PASSWORD,
           jwt_base_path: "/jwt-auth/v1/token", // Default - can skip if you are using https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
         },
-        // Set custom headers
+        // Set custom headers (eg: see Authentication with Cloudflare Access, below)
         headers: {},
         // Set cookies that should be send with requests to wordpress as key value pairs
         cookies: {},
@@ -1005,3 +1005,21 @@ Please note that you need to add `dotenv`, as mentioned earlier, to expose envir
 
 [dotenv]: https://github.com/motdotla/dotenv
 [envvars]: https://www.gatsbyjs.org/docs/environment-variables
+
+## Custom headers
+
+Extra headers are useful for allowing the build process to bypass authentication.
+
+### Authentication with Cloudflare Access
+
+If your DNS is configured via Cloudflare, you might set up Cloudflare Access policies to:
+
+- require your CMS admins to authenticate via Cloudflare
+- allow the build process to access /wp-json via [service tokens](https://developers.cloudflare.com/access/service-auth/service-token/)
+- allow public access to wp-content/uploads
+
+Make the access credentials available to all environments that build your site:
+
+- the local dev server via .env.development ([dotenv](https://www.gatsbyjs.org/docs/environment-variables/))
+- the local production build process via .env.production ([dotenv](https://www.gatsbyjs.org/docs/environment-variables/))
+- netlify, via [environment variables](https://docs.netlify.com/configure-builds/environment-variables/)

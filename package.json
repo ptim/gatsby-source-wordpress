@@ -25,7 +25,8 @@
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "babel-preset-gatsby-package": "^0.2.3",
-    "cross-env": "^5.2.1"
+    "cross-env": "^5.2.1",
+    "dedent": "^0.7.0"
   },
   "homepage": "https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-source-wordpress#readme",
   "keywords": [
@@ -42,6 +43,7 @@
   "scripts": {
     "build": "babel src --out-dir . --ignore **/__tests__",
     "prepare": "cross-env NODE_ENV=production npm run build",
+    "start": "yarn watch",
     "watch": "babel -w src --out-dir . --ignore **/__tests__"
   },
   "engines": {
